@@ -578,6 +578,7 @@ static int verity_verify_io(struct dm_verity_io *io)
 	return 0;
 }
 
+
 /*
  * Skip verity work in response to I/O error when system is shutting down.
  */
