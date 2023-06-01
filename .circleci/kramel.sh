@@ -251,6 +251,15 @@ tg_post_build() {
 
 ##----------------------------------------------------------##
 
+
+# Set function for defconfig changes
+cfg_changes() {
+	if [ $COMPILER == "gcc" ]
+	then
+		sed -i 's/# CONFIG_GCC_GRAPHITE is not set/CONFIG_GCC_GRAPHITE=y/g' arch/arm64/configs/mojito_defconfig
+	fi
+}
+
 build_kernel() {
 	if [ $INCREMENTAL = 0 ]
 	then
@@ -381,6 +390,7 @@ gen_zip() {
 
 clone
 exports
+cfg_changes
 build_kernel
 
 if [ $LOG_DEBUG = "1" ]
