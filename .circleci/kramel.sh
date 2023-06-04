@@ -96,7 +96,7 @@ FILES=Image
 
 # Build dtbo.img (select this only if your source has support to building dtbo.img)
 # 1 is YES | 0 is NO(default)
-BUILD_DTBO=0
+BUILD_DTBO=1
 
 # Sign the zipfile
 # 1 is YES | 0 is NO
@@ -175,17 +175,15 @@ DATE=$(TZ=Asia/Kolkata date +"%Y%m%d-%T")
 	echo " "
 	if [ $COMPILER = "gcc" ]
 	then
-		msg "|| Cloning GCC 12.1 baremetal ||"
+		msg "|| Cloning GCC 14 baremetal ||"
 		git clone --depth=1 https://github.com/mvaisakh/gcc-arm64.git gcc64
-		git clone --depth=1 https://github.com/mvaisakh/gcc-arm.git gcc32
 		GCC64_DIR=$KERNEL_DIR/gcc64
-		GCC32_DIR=$KERNEL_DIR/gcc32
 	fi
 
 	if [ $COMPILER = "clang" ]
 	then
-		msg "|| Cloning Clang-16 ||"
-		git clone --depth=1 https://gitlab.com/dakkshesh07/neutron-clang.git clang-llvm
+		msg "|| Cloning Clang-17 ||"
+		git clone --depth=1 https://gitlab.com/venom-stark/neutron-clang.git -b clang-17 clang-llvm
 		# Toolchain Directory defaults to clang-llvm
 		TC_DIR=$KERNEL_DIR/clang-llvm
 	fi
@@ -193,11 +191,6 @@ DATE=$(TZ=Asia/Kolkata date +"%Y%m%d-%T")
 	msg "|| Cloning Anykernel ||"
 	git clone --depth 1 --no-single-branch https://github.com/"$AUTHOR"/AnyKernel3.git
 
-	if [ $BUILD_DTBO = 1 ]
-	then
-		msg "|| Cloning libufdt ||"
-		git clone https://android.googlesource.com/platform/system/libufdt "$KERNEL_DIR"/scripts/ufdt/libufdt
-	fi
 }
 
 ##------------------------------------------------------##
@@ -213,7 +206,7 @@ exports() {
 	elif [ $COMPILER = "gcc" ]
 	then
 		KBUILD_COMPILER_STRING=$("$GCC64_DIR"/bin/aarch64-elf-gcc --version | head -n 1)
-		PATH=$GCC64_DIR/bin/:$GCC32_DIR/bin/:/usr/bin:$PATH
+		PATH=$GCC64_DIR/bin/:/usr/bin:$PATH
 	fi
 
 	BOT_MSG_URL="https://api.telegram.org/bot$token/sendMessage"
@@ -336,13 +329,6 @@ build_kernel() {
 		if [ -f "$KERNEL_DIR"/out/arch/arm64/boot/$FILES ]
 		then
 			msg "|| Kernel successfully compiled ||"
-			if [ $BUILD_DTBO = 1 ]
-			then
-				msg "|| Building DTBO ||"
-				tg_post_msg "<code>Building DTBO..</code>"
-				python2 "$KERNEL_DIR/scripts/ufdt/libufdt/utils/src/mkdtboimg.py" \
-					create "$KERNEL_DIR/out/arch/arm64/boot/dtbo.img" --page_size=4096 "$KERNEL_DIR/out/arch/arm64/boot/dts/*.dtbo"
-			fi
 				gen_zip
 			else
 			if [ "$PTTG" = 1 ]
@@ -360,6 +346,7 @@ gen_zip() {
 	mv "$KERNEL_DIR"/out/arch/arm64/boot/$FILES AnyKernel3/$FILES
 	if [ $BUILD_DTBO = 1 ]
 	then
+	    cat "$KERNEL_DIR"/out/arch/arm64/boot/dts/qcom/sm6150.dtb > AnyKernel3/dtb
 		mv "$KERNEL_DIR"/out/arch/arm64/boot/dtbo.img AnyKernel3/dtbo.img
 	fi
 	cdir AnyKernel3
