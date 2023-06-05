@@ -1525,7 +1525,7 @@ static int drm_notifier_callback(struct notifier_block *self,
 
     if (!((event == DRM_EARLY_EVENT_BLANK )
           || (event == DRM_EVENT_BLANK))) {
-        FTS_INFO("event(%lu) do not need process\n", event);
+        FTS_DEBUG("event(%lu) do not need process\n", event);
         return 0;
     }
 
@@ -1534,7 +1534,7 @@ static int drm_notifier_callback(struct notifier_block *self,
     switch (*blank) {
     case DRM_BLANK_UNBLANK:
         if (DRM_EARLY_EVENT_BLANK == event) {
-            FTS_INFO("resume: event = %lu, not care\n", event);
+            FTS_DEBUG("resume: event = %lu, not care\n", event);
         } else if (DRM_EVENT_BLANK == event) {
             queue_work(fts_data->ts_workqueue, &fts_data->resume_work);
         }
@@ -1544,11 +1544,11 @@ static int drm_notifier_callback(struct notifier_block *self,
             cancel_work_sync(&fts_data->resume_work);
             fts_ts_suspend(ts_data->dev);
         } else if (DRM_EVENT_BLANK == event) {
-            FTS_INFO("suspend: event = %lu, not care\n", event);
+            FTS_DEBUG("suspend: event = %lu, not care\n", event);
         }
         break;
     default:
-        FTS_INFO("DRM BLANK(%d) do not need process\n", *blank);
+        FTS_DEBUG("DRM BLANK(%d) do not need process\n", *blank);
         break;
     }
 
