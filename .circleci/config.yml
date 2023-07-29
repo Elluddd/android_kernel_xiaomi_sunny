@@ -2,14 +2,26 @@ version: 2.1
 jobs:
   compile:
    docker:
-      - image: panchajanya1999/archlinux:latest
+      - image: archlinux:base-devel
    resource_class: large
    steps:
       - run:
           command: |
+           pacman-key --init
+           pacman -Syyu --noconfirm
+           pacman -S --noconfirm \
+                 wget nano asp github-cli kmod libelf pahole xmlto \
+                 python-sphinx python-sphinx_rtd_theme graphviz imagemagick \
+                 cmake svn lzip git make patchelf zip \
+                 inetutils lld llvm base-devel\
+                 clang bc ccache glibc z3 \
+                 sudo jdk8-openjdk bison cmake flex libelf cpio unzip dpkg \
+                 ninja openssl python3 uboot-tools neofetch ncurses
+                 
+           ln -s /usr/lib/libz3.so /usr/lib/libz3.so.4      
            git config --global user.name "venom-stark"
            git config --global user.email "sachidanandabehera562@gmail.com"
-           git clone --depth=1 https://venom-stark:$GITHUB_TOKEN@github.com/venom-stark/android_kernel_xiaomi_mojito -b ${CIRCLE_BRANCH} .
+           git clone --depth=1 https://github.com/venom-stark/android_kernel_xiaomi_mojito.git -b ${CIRCLE_BRANCH} .
            bash .circleci/kramel.sh
 workflows:
   version: 2.1
