@@ -176,7 +176,7 @@ DATE=$(TZ=Asia/Kolkata date +"%Y%m%d-%T")
 	if [ $COMPILER = "gcc" ]
 	then
 		msg "|| Cloning GCC 14 baremetal ||"
-		git clone --depth=1 https://github.com/mvaisakh/gcc-arm64.git gcc64
+		git clone --depth=1 https://github.com/KenHV/gcc-arm64 gcc64
 		GCC64_DIR=$KERNEL_DIR/gcc64
 	fi
 
