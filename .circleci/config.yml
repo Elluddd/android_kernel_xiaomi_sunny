@@ -10,7 +10,7 @@ jobs:
            pacman-key --init
            pacman -Syyu --noconfirm
            pacman -S --noconfirm \
-                 wget nano asp github-cli kmod libelf pahole xmlto \
+                 wget nano github-cli kmod libelf pahole xmlto \
                  python-sphinx python-sphinx_rtd_theme graphviz imagemagick \
                  cmake svn lzip git make patchelf zip \
                  inetutils lld llvm base-devel\
